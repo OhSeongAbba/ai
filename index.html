@@ -3,18 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>초등학교 교사를 위한 생성형 AI 활용 가이드</title>
+    <title>초등학교 교사를 위한 생성형 AI 활용 가이드 (통합본)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Warm Neutrals -->
-    <!-- Application Structure Plan: A single-page application with a sticky top navigation bar for smooth scrolling to thematic sections (Intro, Material Creation, Admin Tasks, Other Uses, Prompting Guide). This task-oriented structure allows teachers to quickly find relevant, practical examples. Interactive accordions for prompts keep the UI clean and focused, with a "copy" button for immediate use. This is more user-friendly than a linear document. -->
-    <!-- Visualization & Content Choices: Report Info: Teacher's guide to AI -> Goal: Inform/Compare -> Viz: Bar Chart (Chart.js) showing time saved on tasks -> Interaction: None, it's a static visualization. Justification: Visually reinforces the main benefit (efficiency). Report Info: Prompt examples -> Goal: Organize/Inform -> Presentation: Interactive accordions (HTML/CSS/JS) -> Interaction: Click to expand/collapse, button to copy prompt. Justification: Manages information density and provides high utility. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    
+    <!-- 
+    이 파일은 index.html과 comparison.html을 하나로 통합한 파일입니다.
+    - index.html의 스크롤 기반 레이아웃을 기본으로 사용합니다.
+    - comparison.html의 탭 기반 도구 비교 및 전문가 조언 섹션을 새로운 '도구 비교' 섹션으로 추가했습니다.
+    - 두 파일의 스타일과 스크립트가 충돌하지 않도록 병합하고 수정했습니다.
+    -->
+    
     <style>
+        /* --- index.html의 기본 스타일 --- */
         body {
             font-family: 'Noto Sans KR', sans-serif;
-            background-color: #FDFBF8;
+            background-color: #FDFBF8; /* index.html의 따뜻한 배경색 */
             color: #3f3c3a;
         }
         .nav-link {
@@ -24,13 +29,14 @@
             color: #D97706; 
             border-bottom-color: #D97706;
         }
-        .accordion-content {
+        /* index.html의 아코디언 (수업 자료 등) */
+        .index-accordion-content {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.5s ease-out, padding 0.5s ease-out;
             padding: 0 1.5rem;
         }
-        .accordion-content.open {
+        .index-accordion-content.open {
             padding: 1rem 1.5rem;
         }
         .prompt-card {
@@ -46,10 +52,55 @@
         .copy-button:active {
             transform: scale(0.95);
         }
+        
+        /* --- comparison.html에서 가져온 스타일 --- */
+        
+        /* 도구 비교 탭 스타일 */
+        .active-tab {
+            background-color: #81B29A;
+            color: #FFFFFF;
+            font-weight: 700;
+        }
+        .inactive-tab {
+            background-color: #E0E0E0;
+            color: #3D405B;
+        }
+        /* 도구 비교 카드 스타일 */
+        .content-card {
+            background-color: #FFFFFF;
+            border: 1px solid #F2CC8F;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* 도구 비교 '전문가 조언' 아코디언 스타일 */
+        .comparison-accordion-header {
+            cursor: pointer;
+            background-color: #F2CC8F;
+            transition: background-color 0.3s;
+        }
+        .comparison-accordion-header:hover {
+            background-color: #E6BB7E;
+        }
+        .comparison-accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+            background-color: #FFF; /* 내용 배경색 추가 */
+        }
+
+        /* --- practice.html에서 가져온 스타일 --- */
+        .section-icon {
+            margin-right: 0.75rem;
+            color: #4F46E5;
+            font-size: 1.75rem;
+            display: inline-block;
+        }
     </style>
 </head>
 <body class="antialiased">
 
+    <!-- index.html의 헤더 (탐색 메뉴 수정됨) -->
     <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
         <nav class="container mx-auto px-4">
             <div class="flex items-center justify-between h-16">
@@ -59,18 +110,23 @@
                 <div class="hidden md:flex items-center space-x-4">
                     <a href="#intro" class="nav-link border-b-2 border-transparent pb-1">시작하기</a>
                     <a href="#materials" class="nav-link border-b-2 border-transparent pb-1">수업 자료 만들기</a>
-                    <a href="#records" class="nav-link border-b-2 border-transparent pb-1">생활기록부 작성 및 행정업무</a>
-                    <a href="#etc" class="nav-link border-b-2 border-transparent pb-1">기타 유용한 활용법</a>
-                    <a href="#ethics" class="nav-link border-b-2 border-transparent pb-1">AI 활용의 윤리적 고려사항</a>
-                    <a href="#prompts" class="nav-link border-b-2 border-transparent pb-1">핵심 프롬프트 작성법</a>
+                    <a href="#records" class="nav-link border-b-2 border-transparent pb-1">행정업무</a>
+                    <a href="#etc" class="nav-link border-b-2 border-transparent pb-1">기타 활용법</a>
+                    <a href="#ethics" class="nav-link border-b-2 border-transparent pb-1">윤리적 고려사항</a>
+                    <a href="#prompts" class="nav-link border-b-2 border-transparent pb-1">프롬프트 작성법</a>
+                    <!-- '프롬프트 실습'을 '프롬프트 작성법' 다음으로 이동 -->
+                    <a href="#challenge" class="nav-link border-b-2 border-transparent pb-1">프롬프트 실습</a>
+                    <a href="#comparison" class="nav-link border-b-2 border-transparent pb-1">도구 비교</a>
                     <a href="#conclusion" class="nav-link border-b-2 border-transparent pb-1">마무리</a>
                 </div>
             </div>
         </nav>
     </header>
 
+    <!-- index.html의 메인 콘텐츠 -->
     <main class="container mx-auto p-4 md:p-8">
 
+        <!-- 'index.html'의 섹션 1: 시작하기 -->
         <section id="intro" class="mb-16 scroll-mt-20">
             <div class="text-center bg-amber-50 p-8 rounded-xl border border-amber-100">
                 <h1 class="text-4xl font-bold text-amber-800 mb-4">초등학교 선생님을 위한 생성형 AI 길라잡이</h1>
@@ -97,17 +153,23 @@
             </div>
         </section>
 
+        <!-- ====================================================== -->
+        <!--  누락되었던 'index.html'의 섹션들을 여기에 다시 추가합니다  -->
+        <!-- ====================================================== -->
+
+        <!-- 'index.html'의 섹션 2: 수업 자료 만들기 -->
         <section id="materials" class="mb-16 scroll-mt-20">
             <h2 class="text-3xl font-bold text-gray-800 mb-2">수업 자료 만들기</h2>
             <p class="text-gray-600 mb-6">창의적인 수업 아이디어부터 수준별 학습 자료까지, AI로 빠르고 풍부하게 준비하세요.</p>
             
             <div class="space-y-4">
-                <div class="accordion-item bg-white rounded-lg shadow-sm border border-gray-200">
+                <!-- 아코디언 아이템 1 (수정된 클래스 적용) -->
+                <div class="index-accordion-item bg-white rounded-lg shadow-sm border border-gray-200">
                     <button class="accordion-header w-full flex justify-between items-center p-4 text-left">
                         <span class="text-lg font-semibold text-amber-800">1. 수업 아이디어 구상하기</span>
-                        <span class="text-2xl text-amber-600 transform transition-transform duration-300">-</span>
+                        <span class="accordion-icon text-2xl text-amber-600 transform transition-transform duration-300">-</span>
                     </button>
-                    <div class="accordion-content">
+                    <div class="index-accordion-content">
                         <p class="text-gray-600 mb-4">새로운 단원을 시작할 때, 학생들의 흥미를 끌 만한 도입 활동이나 프로젝트 아이디어를 얻을 수 있습니다.</p>
                         <div class="prompt-card">
                             <p class="font-semibold text-gray-700">예시 프롬프트</p>
@@ -119,12 +181,13 @@
                     </div>
                 </div>
 
-                <div class="accordion-item bg-white rounded-lg shadow-sm border border-gray-200">
+                <!-- 아코디언 아이템 2 (수정된 클래스 적용) -->
+                <div class="index-accordion-item bg-white rounded-lg shadow-sm border border-gray-200">
                     <button class="accordion-header w-full flex justify-between items-center p-4 text-left">
                         <span class="text-lg font-semibold text-amber-800">2. 수준별 읽기 자료 제작</span>
-                        <span class="text-2xl text-amber-600 transform transition-transform duration-300">-</span>
+                        <span class="accordion-icon text-2xl text-amber-600 transform transition-transform duration-300">-</span>
                     </button>
-                    <div class="accordion-content">
+                    <div class="index-accordion-content">
                         <p class="text-gray-600 mb-4">같은 주제의 글이라도 학생들의 읽기 수준에 맞춰 어휘와 문장 구조를 조절하여 맞춤형 자료를 만들 수 있습니다.</p>
                         <div class="prompt-card">
                             <p class="font-semibold text-gray-700">예시 프롬프트</p>
@@ -136,12 +199,13 @@
                     </div>
                 </div>
 
-                <div class="accordion-item bg-white rounded-lg shadow-sm border border-gray-200">
+                <!-- 아코디언 아이템 3 (수정된 클래스 적용) -->
+                <div class="index-accordion-item bg-white rounded-lg shadow-sm border border-gray-200">
                     <button class="accordion-header w-full flex justify-between items-center p-4 text-left">
                         <span class="text-lg font-semibold text-amber-800">3. 퀴즈 및 활동지 문항 생성</span>
-                        <span class="text-2xl text-amber-600 transform transition-transform duration-300">-</span>
+                        <span class="accordion-icon text-2xl text-amber-600 transform transition-transform duration-300">-</span>
                     </button>
-                    <div class="accordion-content">
+                    <div class="index-accordion-content">
                         <p class="text-gray-600 mb-4">수업 내용을 확인하는 간단한 퀴즈부터 창의력을 요하는 서술형 문항까지 다양하게 만들 수 있습니다.</p>
                         <div class="prompt-card">
                             <p class="font-semibold text-gray-700">예시 프롬프트</p>
@@ -155,16 +219,17 @@
             </div>
         </section>
 
+        <!-- 'index.html'의 섹션 3: 생활기록부 작성 및 행정 업무 -->
         <section id="records" class="mb-16 scroll-mt-20">
             <h2 class="text-3xl font-bold text-gray-800 mb-2">생활기록부 작성 및 행정 업무</h2>
             <p class="text-gray-600 mb-6">학생의 성장 과정을 섬세하게 기록하고, 반복적인 행정 업무의 효율을 높여보세요.</p>
             <div class="space-y-4">
-                 <div class="accordion-item bg-white rounded-lg shadow-sm border border-gray-200">
+                 <div class="index-accordion-item bg-white rounded-lg shadow-sm border border-gray-200">
                     <button class="accordion-header w-full flex justify-between items-center p-4 text-left">
                         <span class="text-lg font-semibold text-amber-800">1. 관찰 기록 기반 서술 초안 작성</span>
-                        <span class="text-2xl text-amber-600 transform transition-transform duration-300">-</span>
+                        <span class="accordion-icon text-2xl text-amber-600 transform transition-transform duration-300">-</span>
                     </button>
-                    <div class="accordion-content">
+                    <div class="index-accordion-content">
                         <p class="text-gray-600 mb-4">교사가 기록한 학생의 행동 특성이나 강점을 바탕으로, 이를 종합하여 생활기록부 문장의 초안을 작성할 수 있습니다.</p>
                         <div class="prompt-card">
                              <p class="text-sm text-red-600 font-semibold mb-2">※ 주의: 아래 예시처럼 학생 개인정보를 삭제하고 핵심적인 관찰 내용만 키워드로 입력하세요.</p>
@@ -180,12 +245,12 @@
                     </div>
                 </div>
 
-                <div class="accordion-item bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="index-accordion-item bg-white rounded-lg shadow-sm border border-gray-200">
                     <button class="accordion-header w-full flex justify-between items-center p-4 text-left">
                         <span class="text-lg font-semibold text-amber-800">2. 가정통신문 및 공지사항 작성</span>
-                        <span class="text-2xl text-amber-600 transform transition-transform duration-300">-</span>
+                        <span class="accordion-icon text-2xl text-amber-600 transform transition-transform duration-300">-</span>
                     </button>
-                    <div class="accordion-content">
+                    <div class="index-accordion-content">
                         <p class="text-gray-600 mb-4">전달할 핵심 내용만 입력하면, 격식과 상황에 맞는 안내문의 초안을 빠르게 얻을 수 있습니다.</p>
                         <div class="prompt-card">
                             <p class="font-semibold text-gray-700">예시 프롬프트</p>
@@ -204,17 +269,18 @@
                 </div>
             </div>
         </section>
-        
+
+        <!-- 'index.html'의 섹션 4: 기타 유용한 활용법 -->
         <section id="etc" class="mb-16 scroll-mt-20">
             <h2 class="text-3xl font-bold text-gray-800 mb-2">기타 유용한 활용법</h2>
             <p class="text-gray-600 mb-6">교실 밖에서도 AI는 선생님의 든든한 파트너가 될 수 있습니다.</p>
             <div class="space-y-4">
-                 <div class="accordion-item bg-white rounded-lg shadow-sm border border-gray-200">
+                 <div class="index-accordion-item bg-white rounded-lg shadow-sm border border-gray-200">
                     <button class="accordion-header w-full flex justify-between items-center p-4 text-left">
                         <span class="text-lg font-semibold text-amber-800">1. 학급 행사 아이디어 브레인스토밍</span>
-                        <span class="text-2xl text-amber-600 transform transition-transform duration-300">-</span>
+                        <span class="accordion-icon text-2xl text-amber-600 transform transition-transform duration-300">-</span>
                     </button>
-                    <div class="accordion-content">
+                    <div class="index-accordion-content">
                         <p class="text-gray-600 mb-4">학예회, 운동회, 학급 특색 활동 등 특별한 행사를 위한 창의적인 아이디어를 얻고 계획을 구체화할 수 있습니다.</p>
                         <div class="prompt-card">
                             <p class="font-semibold text-gray-700">예시 프롬프트</p>
@@ -226,12 +292,12 @@
                     </div>
                 </div>
 
-                <div class="accordion-item bg-white rounded-lg shadow-sm border border-gray-200">
+                <div class="index-accordion-item bg-white rounded-lg shadow-sm border border-gray-200">
                     <button class="accordion-header w-full flex justify-between items-center p-4 text-left">
                         <span class="text-lg font-semibold text-amber-800">2. 학생 상담 및 생활지도 참고 자료 얻기</span>
-                        <span class="text-2xl text-amber-600 transform transition-transform duration-300">-</span>
+                        <span class="accordion-icon text-2xl text-amber-600 transform transition-transform duration-300">-</span>
                     </button>
-                    <div class="accordion-content">
+                    <div class="index-accordion-content">
                         <p class="text-gray-600 mb-4">특정 문제 상황에 대한 일반적인 대처 방안이나 학생과 대화할 때 참고할 만한 아이디어를 얻을 수 있습니다. (AI의 조언은 참고용이며, 실제 상담은 전문가 및 교사의 판단이 필수적입니다.)</p>
                         <div class="prompt-card">
                             <p class="font-semibold text-gray-700">예시 프롬프트</p>
@@ -245,6 +311,7 @@
             </div>
         </section>
 
+        <!-- 'index.html'의 섹션 5: AI 활용의 윤리적 고려사항 -->
         <section id="ethics" class="mb-16 scroll-mt-20">
             <h2 class="text-3xl font-bold text-gray-800 mb-2 flex items-center">AI 활용의 윤리적 고려사항</h2>
             <p class="text-gray-600 mb-6">AI를 책임감 있게 사용하기 위해 반드시 기억해야 할 원칙들입니다.</p>
@@ -268,8 +335,8 @@
             </div>
         </section>
 
-
-        <section id="prompts" class="scroll-mt-20">
+        <!-- 'index.html'의 섹션 6: 핵심 프롬프트 작성법 -->
+        <section id="prompts" class="mb-16 scroll-mt-20">
             <h2 class="text-3xl font-bold text-gray-800 mb-2">핵심 프롬프트 작성법</h2>
             <p class="text-gray-600 mb-6">원하는 답변을 얻기 위한 '질문의 기술'입니다. 아래 4가지 요소를 기억하세요.</p>
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -310,7 +377,255 @@
             </div>
         </section>
 
-<br><br>
+        <!-- ====================================================== -->
+        <!--  'practice.html' (프롬프트 실습) 섹션 -->
+        <!-- ====================================================== -->
+        <section id="challenge" class="mb-20 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2 flex items-center"><span class="section-icon">🎮</span>실습 챌린지: 나만의 프롬프트 만들기</h2>
+            <p class="text-gray-600 mb-8 max-w-4xl">이제 배운 내용을 바탕으로 직접 프롬프트를 만들어 볼 시간입니다. 아래의 빌더를 사용하여 각 요소를 조합하고, '프롬프트 생성' 버튼을 눌러 나만의 맞춤형 프롬프트를 완성해보세요. 완성된 프롬프트는 복사하여 바로 사용할 수 있습니다.</p>
+            <div class="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="role-select" class="block text-sm font-medium text-gray-700 mb-1">1. 역할 (Role) 선택</label>
+                        <select id="role-select" class="w-full p-2 border border-gray-300 rounded-md">
+                            <option value="너는 초등학교 3학년 담임교사야.">초등 3학년 담임교사</option>
+                            <option value="너는 초등학교 6학년 사회 과목 전담 교사야.">초등 6학년 사회 교사</option>
+                            <option value="너는 학생 상담을 전문으로 하는 Wee클래스 상담교사야.">Wee클래스 상담교사</option>
+                            <option value="너는 30년 경력의 초등학교 교감 선생님이야.">30년 경력 교감선생님</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="task-select" class="block text-sm font-medium text-gray-700 mb-1">2. 임무 (Task) 선택</label>
+                        <select id="task-select" class="w-full p-2 border border-gray-300 rounded-md">
+                            <option value="수업 도입 활동 아이디어를 5가지 제안해 줘.">수업 아이디어 제안</option>
+                            <option value="가정통신문 초안을 작성해 줘.">가정통신문 작성</option>
+                            <option value="학생의 행동 특성에 대한 조언을 해줘.">학생 행동 조언</option>
+                            <option value="교과 발달 상황 서술 초안을 작성해 줘.">교과 발달 상황 작성</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <label for="context-input" class="block text-sm font-medium text-gray-700 mb-1">3. 맥락 (Context) 입력 (핵심 내용 기입)</label>
+                    <textarea id="context-input" rows="4" class="w-full p-2 border border-gray-300 rounded-md" placeholder="예: 과학 '물질의 상태' 단원. 준비물은 간단하게.&#10;예: 가을 현장체험학습 안내. 장소는 국립중앙박물관."></textarea>
+                </div>
+                 <div class="mt-6">
+                        <label for="format-select" class="block text-sm font-medium text-gray-700 mb-1">4. 형식 (Format) 선택</label>
+                        <select id="format-select" class="w-full p-2 border border-gray-300 rounded-md">
+                            <option value="각 아이디어는 글머리 기호로 구분하고, 필요한 준비물도 알려줘.">글머리 기호 형식</option>
+                            <option value="정중하고 친절한 어조로 작성해 줘.">정중하고 친절한 어조</option>
+                            <option value="학생의 강점이 잘 드러나도록 긍정적인 표현을 사용해 줘.">긍정적 표현 강조</option>
+                            <option value="표 형식으로 깔끔하게 정리해 줘.">표 형식</option>
+                        </select>
+                 </div>
+                <div class="mt-8 text-center">
+                    <button id="generate-prompt-btn" class="bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-indigo-700 transition-colors">
+                        프롬프트 생성 ✨
+                    </button>
+                </div>
+                <div class="mt-8">
+                     <label for="generated-prompt" class="block text-sm font-medium text-gray-700 mb-1">생성된 프롬프트</label>
+                     <textarea id="generated-prompt" rows="6" class="w-full p-3 bg-gray-100 border border-gray-200 rounded-md text-gray-800" readonly></textarea>
+                     <!-- copyToClipboard 함수 호출을 수정된 버전에 맞게 변경 -->
+                     <button class="copy-button mt-2 bg-gray-600 text-white px-4 py-1 text-sm rounded-md hover:bg-gray-700" onclick="copyToClipboard('generated-prompt', true)">프롬프트 복사</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ====================================================== -->
+        <!--  'comparison.html'의 콘텐츠가 여기에 새 섹션으로 추가됩니다  -->
+        <!-- ====================================================== -->
+        <section id="comparison" class="mb-16 scroll-mt-20">
+            <!-- comparison.html의 헤더 대신 h2 제목 추가 -->
+            <h2 class="text-3xl font-bold text-gray-800 mb-4 text-center">AI 핵심 도구 5종 비교 분석</h2>
+            <p class="text-lg text-gray-700 max-w-3xl mx-auto text-center mb-10">
+                수업 준비와 행정 업무의 효율을 높여줄 최고의 AI 파트너를 찾아보세요.
+            </p>
+
+            <!-- comparison.html의 탭 네비게이션 -->
+            <nav id="tab-nav" class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+                <button data-tab="summary" class="tab-btn px-4 py-2 rounded-full text-sm md:text-base font-medium transition-all duration-300 active-tab">종합 비교</button>
+                <button data-tab="chatgpt" class="tab-btn px-4 py-2 rounded-full text-sm md:text-base font-medium transition-all duration-300 inactive-tab">ChatGPT</button>
+                <button data-tab="gemini" class="tab-btn px-4 py-2 rounded-full text-sm md:text-base font-medium transition-all duration-300 inactive-tab">Gemini</button>
+                <button data-tab="perplexity" class="tab-btn px-4 py-2 rounded-full text-sm md:text-base font-medium transition-all duration-300 inactive-tab">Perplexity</button>
+                <button data-tab="claude" class="tab-btn px-4 py-2 rounded-full text-sm md:text-base font-medium transition-all duration-300 inactive-tab">Claude</button>
+                <button data-tab="wrtn" class="tab-btn px-4 py-2 rounded-full text-sm md:text-base font-medium transition-all duration-300 inactive-tab">뤼튼</button>
+            </nav>
+
+            <!-- comparison.html의 탭 콘텐츠 -->
+            <main id="tab-content" class="max-w-5xl mx-auto">
+                <div id="summary" class="tab-pane">
+                    <div class="content-card p-4 md:p-8">
+                        <h3 class="text-2xl font-bold text-center mb-2" style="color: #3D405B;">AI 도구별 강점 한눈에 보기</h3>
+                        <p class="text-center text-gray-600 mb-6">각 도구는 저마다 다른 강점을 가지고 있습니다. 선생님의 주된 활용 목적에 따라 최적의 도구를 선택해 보세요. 아래 차트는 각 도구의 상대적인 특징을 시각적으로 보여줍니다.</p>
+                        <div class="chart-container w-full max-w-2xl mx-auto h-80 md:h-96">
+                            <canvas id="aiComparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="chatgpt" class="tab-pane hidden">
+                    <div class="content-card p-6 md:p-8">
+                        <h3 class="text-3xl font-bold text-[#3D405B] mb-4">ChatGPT (챗GPT)</h3>
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">접근성</h4>
+                                <p>회원가입 및 로그인이 필요합니다. (구글, 마이크로소프트, 애플 계정 연동 가능)</p>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">초등교사 활용 장점</h4>
+                                <ul class="list-disc list-inside space-y-1 pl-2">
+                                    <li><strong>뛰어난 창의력:</strong> 수업 아이디어, 학생 수준별 맞춤 동화나 역할극 대본 생성에 탁월합니다.</li>
+                                    <li><strong>풍부한 활용 사례:</strong> 전 세계 사용자가 가장 많아 참고할 만한 활용법이나 프롬프트 예시를 찾기 쉽습니다.</li>
+                                    <li><strong>범용성:</strong> 가정통신문 초안 작성, 수업 계획안 구상 등 다양한 글쓰기 작업에 범용적으로 활용 가능합니다.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">초등교사 활용 단점</h4>
+                                <ul class="list-disc list-inside space-y-1 pl-2">
+                                    <li><strong>정보의 시의성 부족 (무료):</strong> 무료 버전(GPT-3.5)은 특정 시점까지의 데이터로 학습해 최신 정보를 반영하지 못합니다.</li>
+                                    <li><strong>환각(Hallucination):</strong> 사실이 아닌 정보를 그럴듯하게 제시할 수 있어, 사실 확인이 반드시 필요합니다.</li>
+                                    <li><strong>미묘한 언어의 어색함:</strong> 한국어 답변이 자연스럽지만, 때로 미묘하게 어색하거나 번역투 문장이 나올 수 있습니다.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">무료 버전 효율성</h4>
+                                <p>GPT-3.5 모델 기반으로, 일상적인 수업 자료 생성, 아이디어 구상, 글쓰기 초안 작성 등 대부분의 교무 활동에 충분히 효율적입니다. 이미지 생성, 파일 분석, 최신 정보 검색 등 고급 기능은 유료 버전에서 지원됩니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="gemini" class="tab-pane hidden">
+                     <div class="content-card p-6 md:p-8">
+                        <h3 class="text-3xl font-bold text-[#3D405B] mb-4">Gemini (제미나이)</h3>
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">접근성</h4>
+                                <p>구글 계정만 있으면 즉시 사용 가능하여 접근성이 매우 뛰어납니다.</p>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">초등교사 활용 장점</h4>
+                                <ul class="list-disc list-inside space-y-1 pl-2">
+                                    <li><strong>최신 정보 반영:</strong> 구글 검색과 실시간 연동되어 최신 이슈나 뉴스 기반의 수업 자료를 만들 때 유리합니다.</li>
+                                    <li><strong>강력한 멀티모달:</strong> 이미지, 음성 인식이 가능해, 사진 속 글자를 추출하거나(학습지 내용 인식), 그림을 설명하는 글을 만들 수 있습니다.</li>
+                                    <li><strong>구글 생태계 연동:</strong> 구글 문서, 스프레드시트 등과 연동하여 작업 효율을 높일 잠재력이 큽니다.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">초등교사 활용 단점</h4>
+                                <ul class="list-disc list-inside space-y-1 pl-2">
+                                    <li><strong>상대적으로 딱딱한 문체:</strong> 창의적인 글쓰기에서 ChatGPT에 비해 다소 정보 중심적이고 딱딱한 결과물을 낼 때가 있습니다.</li>
+                                    <li><strong>답변 생성 속도:</strong> 실시간 검색을 동반하는 경우, 답변 생성 속도가 다소 느리게 느껴질 수 있습니다.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">무료 버전 효율성</h4>
+                                <p>매우 강력합니다. 최신 정보 검색, 이미지 분석 등 핵심적인 고급 기능을 대부분 무료로 제공하여 활용도가 매우 높습니다. 현재 무료 버전에서 가장 다재다능한 도구 중 하나입니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="perplexity" class="tab-pane hidden">
+                    <div class="content-card p-6 md:p-8">
+                        <h3 class="text-3xl font-bold text-[#3D405B] mb-4">Perplexity (퍼플렉시티)</h3>
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">접근성</h4>
+                                <p>회원가입 없이 핵심 기능 사용이 가능하지만, 대화 기록 저장을 위해서는 로그인이 필요합니다.</p>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">초등교사 활용 장점</h4>
+                                <ul class="list-disc list-inside space-y-1 pl-2">
+                                    <li><strong>출처 기반의 높은 신뢰도:</strong> 모든 답변에 웹 출처(소스)를 함께 제공하여 정보의 신뢰도가 높고, 팩트체크가 용이합니다.</li>
+                                    <li><strong>자료 조사에 최적화:</strong> 특정 주제에 대한 자료를 조사하고 보고서 형식으로 정리하는 데 매우 강력한 성능을 보입니다.</li>
+                                    <li><strong>질문 추천 기능:</strong> 사용자의 질문에 이어 탐구할 만한 연관 질문들을 추천해 주어 생각의 확장을 돕습니다.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">초등교사 활용 단점</h4>
+                                <ul class="list-disc list-inside space-y-1 pl-2">
+                                    <li><strong>창의성 부족:</strong> 검색과 요약에 특화되어 있어, 동화나 시를 쓰는 등 창의적인 콘텐츠 생성 능력은 상대적으로 약합니다.</li>
+                                    <li><strong>짧은 대화 맥락:</strong> 긴 호흡의 대화를 이어나가며 결과물을 발전시키는 작업에는 다소 불리합니다.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">무료 버전 효율성</h4>
+                                <p>핵심 기능인 출처 기반 검색을 충분히 활용할 수 있어 무료 버전만으로도 자료 조사의 효율을 크게 높일 수 있습니다. 다만 Pro 모델(GPT-4, Claude 3 등) 사용은 4시간마다 5회로 제한됩니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="claude" class="tab-pane hidden">
+                    <div class="content-card p-6 md:p-8">
+                        <h3 class="text-3xl font-bold text-[#3D405B] mb-4">Claude (클로드)</h3>
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">접근성</h4>
+                                <p>회원가입 및 로그인이 필요합니다. (이메일 또는 구글 계정)</p>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">초등교사 활용 장점</h4>
+                                <ul class="list-disc list-inside space-y-1 pl-2">
+                                    <li><strong>긴 글 요약 및 분석:</strong> 한 번에 처리할 수 있는 텍스트 양이 매우 커서, 긴 보고서나 논문을 요약하고 분석하는 데 탁월합니다. (예: 교육과정 해설서 분석)</li>
+                                    <li><strong>자연스럽고 친절한 문체:</strong> 인간적이고 사려 깊은 톤의 답변을 제공하여, 학생이나 학부모 대상의 따뜻한 글쓰기에 유용합니다.</li>
+                                    <li><strong>높은 안전성:</strong> 유해하거나 부적절한 답변을 생성하지 않도록 설계되어 교육 현장에서 사용하기에 비교적 안전합니다.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">초등교사 활용 단점</h4>
+                                <ul class="list-disc list-inside space-y-1 pl-2">
+                                    <li><strong>멀티모달 기능 부재:</strong> 이미지나 음성을 직접 생성하거나 분석하는 기능은 아직 지원하지 않습니다. (파일 업로드 후 내용 분석은 가능)</li>
+                                    <li><strong>상대적으로 낮은 인지도:</strong> 국내 사용자층이 얇아 활용 노하우나 정보를 얻기 다소 어렵습니다.</li>
+                                    <li><strong>실시간 검색 미지원:</strong> 최신 정보를 반영한 답변을 얻기 어렵습니다.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">무료 버전 효율성</h4>
+                                <p>최신 모델(Claude 3 Sonnet)을 무료로 사용할 수 있어 성능은 좋으나, 일정 시간 동안 사용할 수 있는 메시지 양에 제한이 있습니다. 사용량이 많아지면 몇 시간 동안 사용이 중단될 수 있어 아쉬움이 있습니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="wrtn" class="tab-pane hidden">
+                    <div class="content-card p-6 md:p-8">
+                        <h3 class="text-3xl font-bold text-[#3D405B] mb-4">뤼튼 (Wrtn)</h3>
+                        <div class="space-y-6">
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">접근성</h4>
+                                <p>회원가입 및 로그인이 필요합니다. (카카오, 네이버, 구글 등 소셜 로그인 지원으로 간편)</p>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">초등교사 활용 장점</h4>
+                                <ul class="list-disc list-inside space-y-1 pl-2">
+                                    <li><strong>한국어 및 한국 문화 특화:</strong> 한국어의 뉘앙스를 가장 잘 이해하며, 한국 교육과정이나 정서에 맞는 결과물을 생성하는 데 강점이 있습니다.</li>
+                                    <li><strong>다양한 템플릿(툴):</strong> 블로그 글, 카드뉴스, 보고서 등 다양한 목적에 맞는 프롬프트 템플릿을 제공하여 AI를 처음 쓰는 사용자도 쉽게 활용할 수 있습니다.</li>
+                                    <li><strong>최신 모델 무료 접근:</strong> GPT-4나 Claude 등 최신 AI 모델을 무료로 이용할 수 있는 기회를 제공하는 경우가 많습니다.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">초등교사 활용 단점</h4>
+                                <ul class="list-disc list-inside space-y-1 pl-2">
+                                    <li><strong>해외 자료 조사 한계:</strong> 국내 정보에는 강하지만, 해외 자료를 깊이 있게 조사하거나 외국어 콘텐츠를 생성하는 능력은 다소 부족할 수 있습니다.</li>
+                                    <li><strong>플랫폼 안정성:</strong> 자체 모델이 아닌 외부 모델을 연동하는 방식이 많아, 외부 정책 변화에 따라 서비스가 변경될 수 있습니다.</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-semibold border-l-4 border-[#81B29A] pl-3 mb-2">무료 버전 효율성</h4>
+                                <p>매우 뛰어납니다. 광고 시청 등을 통해 유료 모델을 무료로 사용할 수 있게 해주는 경우가 많아, 비용 부담 없이 강력한 AI 기능을 체험하고 활용하기에 가장 좋은 선택지 중 하나입니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+            <!-- comparison.html의 '전문가 조언' 섹션이 삭제되었습니다. -->
+            
+        </section>
+
+        <!-- 'index.html'의 섹션 7: 마무리 -->
         <section id="conclusion" class="scroll-mt-20">
             <div class="text-center bg-white p-10 rounded-xl border border-gray-200 shadow-sm">
                 <h2 class="text-3xl font-bold text-gray-800 mb-4">미래 교육을 향한 첫걸음</h2>
@@ -321,6 +636,7 @@
         </section>
     </main>
 
+    <!-- index.html의 푸터 -->
     <footer class="bg-gray-800 text-white mt-16">
         <div class="container mx-auto p-6 text-center">
             <p>&copy; 회색오리(서울서정초등학교 교사). All Rights Reserved.</p>
@@ -328,14 +644,58 @@
         </div>
     </footer>
     
+    <!-- index.html의 복사 알림창 -->
     <div id="copy-notification" class="fixed bottom-5 right-5 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-lg opacity-0 transition-opacity duration-300">
         프롬프트가 복사되었습니다!
     </div>
 
 
 <script>
+// --- 공용 알림 함수 ---
+function showNotification(message) {
+    const notification = document.getElementById('copy-notification');
+    notification.textContent = message; // 알림 메시지 설정
+    notification.classList.remove('opacity-0');
+    setTimeout(() => {
+        notification.classList.add('opacity-0');
+    }, 2000);
+}
+
+// --- practice.html의 복사 함수 (기존 함수 대체) ---
+// isTextarea 파라미터를 추가하고 alert() 대신 showNotification()을 사용
+function copyToClipboard(elementId, isTextarea = false) {
+    const element = document.getElementById(elementId);
+    let textToCopy;
+
+    if (isTextarea) {
+        textToCopy = element.value;
+    } else {
+        // P 태그나 다른 요소의 텍스트를 복사할 경우
+        textToCopy = element.innerText;
+    }
+
+    // 생성된 프롬프트가 없는 경우 알림
+    if (!textToCopy) {
+        showNotification('복사할 내용이 없습니다.');
+        return;
+    }
+    
+    // 클립보드에 복사
+    const tempTextArea = document.createElement('textarea');
+    tempTextArea.value = textToCopy;
+    document.body.appendChild(tempTextArea);
+    tempTextArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(tempTextArea);
+
+    // 복사 완료 알림 표시
+    showNotification('클립보드에 복사되었습니다!');
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
     
+    // --- index.html의 스크립트 (탐색 및 아코디언) ---
     const navLinks = document.querySelectorAll('.nav-link');
     const sections = document.querySelectorAll('section');
 
@@ -375,21 +735,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    const accordions = document.querySelectorAll('.accordion-item');
-    accordions.forEach(item => {
+    // index.html의 아코디언 로직 (클래스 이름 충돌 방지)
+    // '.index-accordion-item'을 사용하도록 수정
+    const indexAccordions = document.querySelectorAll('.index-accordion-item');
+    indexAccordions.forEach(item => {
         const header = item.querySelector('.accordion-header');
-        const content = item.querySelector('.accordion-content');
-        const icon = header.querySelector('span:last-child');
+        const content = item.querySelector('.index-accordion-content');
+        const icon = header.querySelector('.accordion-icon'); // 아이콘 클래스 지정
 
         header.addEventListener('click', () => {
             const isOpen = content.classList.contains('open');
             
-            accordions.forEach(otherItem => {
-                otherItem.querySelector('.accordion-content').classList.remove('open');
-                otherItem.querySelector('.accordion-content').style.maxHeight = null;
-                 otherItem.querySelector('.accordion-header span:last-child').textContent = '-';
-                 otherItem.querySelector('.accordion-header span:last-child').classList.remove('rotate-45');
-
+            // 다른 index 아코디언 닫기
+            indexAccordions.forEach(otherItem => {
+                otherItem.querySelector('.index-accordion-content').classList.remove('open');
+                otherItem.querySelector('.index-accordion-content').style.maxHeight = null;
+                 otherItem.querySelector('.accordion-icon').textContent = '-';
+                 otherItem.querySelector('.accordion-icon').classList.remove('rotate-45');
             });
 
             if (!isOpen) {
@@ -405,8 +767,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    const ctx = document.getElementById('timeSaveChart').getContext('2d');
-    const timeSaveChart = new Chart(ctx, {
+    // index.html의 막대 차트 (timeSaveChart)
+    const ctxTimeSave = document.getElementById('timeSaveChart').getContext('2d');
+    const timeSaveChart = new Chart(ctxTimeSave, {
         type: 'bar',
         data: {
             labels: ['수업자료 준비', '생활기록부 작성', '가정통신문', '행사 기획'],
@@ -461,28 +824,143 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
+
+    // --- comparison.html의 스크립트 (탭) ---
+    
+    // 탭 로직
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panes = document.querySelectorAll('.tab-pane');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.getAttribute('data-tab');
+
+            tabs.forEach(t => {
+                t.classList.remove('active-tab');
+                t.classList.add('inactive-tab');
+            });
+            tab.classList.add('active-tab');
+            tab.classList.remove('inactive-tab');
+
+            panes.forEach(pane => {
+                if (pane.id === target) {
+                    pane.classList.remove('hidden');
+                } else {
+                    pane.classList.add('hidden');
+                }
+            });
+        });
+    });
+
+    // comparison.html의 아코디언 로직 (삭제됨)
+    
+    // comparison.html의 레이더 차트 (aiComparisonChart)
+    const ctxAiComparison = document.getElementById('aiComparisonChart').getContext('2d');
+    const aiChart = new Chart(ctxAiComparison, {
+        type: 'radar',
+        data: {
+            labels: ['창의성 (수업 아이디어)', '정확성 (자료 조사)', '사용 편의성', '한국어 능력', '다기능성 (이미지 등)'],
+            datasets: [{
+                label: 'ChatGPT',
+                data: [9, 6, 8, 8, 7],
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 2
+            }, {
+                label: 'Gemini',
+                data: [7, 8, 9, 8, 9],
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 2
+            }, {
+                label: 'Perplexity',
+                data: [5, 9, 7, 7, 6],
+                backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                borderColor: 'rgba(255, 206, 86, 1)',
+                borderWidth: 2
+            },{
+                label: 'Claude',
+                data: [8, 7, 7, 8, 5],
+                backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                borderColor: 'rgba(153, 102, 255, 1)',
+                borderWidth: 2
+            }, {
+                label: '뤼튼',
+                data: [7, 7, 9, 9, 8],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    angleLines: {
+                        display: true
+                    },
+                    suggestedMin: 0,
+                    suggestedMax: 10,
+                    pointLabels: {
+                        font: {
+                            size: 12
+                        }
+                    },
+                    ticks: {
+                       stepSize: 2
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.r !== null) {
+                                label += context.parsed.r + '점';
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // --- practice.html의 스크립트 ('프롬프트 생성' 버튼) ---
+    const generateBtn = document.getElementById('generate-prompt-btn');
+    if (generateBtn) { // 버튼이 페이지에 존재하는지 확인
+        const outputTextarea = document.getElementById('generated-prompt');
+        
+        generateBtn.addEventListener('click', () => {
+            const role = document.getElementById('role-select').value;
+            const task = document.getElementById('task-select').value;
+            const context = document.getElementById('context-input').value;
+            const format = document.getElementById('format-select').value;
+            
+            // 맥락 입력값이 비어있는지 확인 (alert 대신 showNotification 사용)
+            if (!context.trim()) {
+                showNotification('3번 맥락(Context)을 입력해주세요.');
+                return;
+            }
+
+            // 프롬프트 조합
+            const fullPrompt = `${role} ${task}\n\n[핵심 내용]\n${context}\n\n[요청 형식]\n${format}`;
+            outputTextarea.value = fullPrompt;
+        });
+    }
 });
 
-function copyToClipboard(elementId) {
-    const textToCopy = document.getElementById(elementId).innerText;
-    
-    const tempTextArea = document.createElement('textarea');
-    tempTextArea.value = textToCopy;
-    document.body.appendChild(tempTextArea);
-    tempTextArea.select();
-    document.execCommand('copy');
-    document.body.removeChild(tempTextArea);
-
-    const notification = document.getElementById('copy-notification');
-    notification.classList.remove('opacity-0');
-    setTimeout(() => {
-        notification.classList.add('opacity-0');
-    }, 2000);
-}
-
-
+// --- 기존 index.html의 공용 클립보드 복사 함수 ---
+// (practice.html의 새 함수로 대체되었으므로 이 섹션은 삭제)
+// function copyToClipboard(elementId) { ... }
 
 </script>
 </body>
 </html>
-
